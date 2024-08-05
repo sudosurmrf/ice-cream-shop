@@ -48,4 +48,19 @@ const createFlavor = async(flavor, is_favorite) => {
 }
 
 
-module.exports = { getFlavors, getFlavorByName, createFlavor };
+const updateFlavor = async(flavor, is_favorite) => {
+  try{
+    const { rows } = await client.query(`
+      UPDATE flavors
+      SET flavor = $1, is_favorite = $2, updated_at = NOW()
+      WHERE flavor =$1
+      RETURNING *;
+      `,[flavor, is_favorite]);
+    return rows[0]; 
+  }catch(err){
+    console.log(err)
+    throw new Error(`couldn't update the table`);
+  }
+}
+
+module.exports = { getFlavors, getFlavorByName, createFlavor, updateFlavor };

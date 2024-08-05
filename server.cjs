@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const client = require('./db/client.cjs');
-const { getFlavors, getFlavorByName, createFlavor } = require('./db/getFlavors.cjs');
+const { getFlavors, getFlavorByName, createFlavor, updateFlavor } = require('./db/getFlavors.cjs');
 const app = express();
 const axios = require('axios');
 
@@ -47,6 +47,23 @@ app.post('/api/flavors', async (req, res, next) => {
   }
 
 })
+
+app.put('/api/flavors/:id', async (req, res, next) => {
+  try{
+    
+    const { flavor, is_favorite } = req.body;
+    const updatedFlavor = await updateFlavor(flavor, is_favorite);
+    if(updatedFlavor) {
+      res.json(updatedFlavor);
+    } else {
+      res.status(404).send("Flavor not found");
+    }
+
+  }catch(err){
+    console.log(err)
+    res.status(500).send('Internal Serv Error');
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
