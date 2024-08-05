@@ -37,6 +37,7 @@ const getTableInfo = async(tableName) => {
       SELECT * FROM ${tableName};`)
 
     return rows;
+      // console.log(rows);
 
 
   }catch(err){
@@ -46,11 +47,14 @@ const getTableInfo = async(tableName) => {
 
 
 
-const createFlavor= async () => {
+const createFlavor= async (flavor, is_favorite) => {
   try{
     await client.query(`
       INSERT INTO flavors (flavor, is_favorite, created_at, updated_at)
-      VALUES ('${flavor}', '${is_favorite}', '${created_at}', '${updated_at}');`);
+      VALUES ($1, $2, NOW(), NOW());
+      `,
+      [flavor, is_favorite]
+    );
 
 
   }catch(err){
@@ -58,6 +62,10 @@ const createFlavor= async () => {
   }
 
 }
+
+
+
+
 
 const syncAndSeed = async() => {
 
@@ -70,11 +78,17 @@ const syncAndSeed = async() => {
   await createTables();
   console.log('table created!');
 
-  await createFlavor();
+  await createFlavor('Chocolate', false);
+  await createFlavor('Vanilla', false);
+  await createFlavor('Mint Chocolate', true);
+  await createFlavor('strawberry', false);
   console.log('flavor created!');
 
+  await getTableInfo('flavors');
+  console.log('table returned');
 
 
+  await client.end();
   
 
 }
