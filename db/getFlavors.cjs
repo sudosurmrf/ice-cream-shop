@@ -1,6 +1,7 @@
 const client = require('./client.cjs');
 
 
+
 const getFlavors = async() => {
   try{
     const { rows } = await client.query(`
@@ -32,4 +33,19 @@ const getFlavorByName = async(flavorName) => {
 
 };
 
-module.exports = { getFlavors, getFlavorByName };
+
+const createFlavor = async(flavor, is_favorite) => {
+  try {
+    await client.query(`
+      INSERT INTO flavors (flavor, is_favorite, created_at, updated_at)
+      VALUES ($1, $2, NOW(), NOW());
+      `,
+    [flavor, is_favorite]);
+  }catch(err) {
+    console.log(err);
+    throw new Error(`Couldn't create flavor`);
+  }
+}
+
+
+module.exports = { getFlavors, getFlavorByName, createFlavor };
